@@ -49,8 +49,24 @@
  @param keyPath The key path of the property to be animated.
  */
 - (void)addAnimationWithTiming:(MDMMotionTiming)timing
-                       toLayer:(CALayer *)layer
-                    withValues:(NSArray *)values
-                       keyPath:(NSString *)keyPath;
+                       toLayer:(nonnull CALayer *)layer
+                    withValues:(nonnull NSArray *)values
+                       keyPath:(nonnull NSString *)keyPath;
+
+/**
+ Adds a single animation to the layer with the given timing structure.
+
+ @param timing The timing to be used for the animation.
+ @param layer The layer to be animated.
+ @param values The values to be used in the animation. Must contain exactly two values. Supported
+ UIKit types will be coerced to their Core Animation equivalent. Supported UIKit values include
+ UIColor and UIBezierPath.
+ @param keyPath The key path of the property to be animated.
+ */
+- (void)addAnimationWithTiming:(MDMMotionTiming)timing
+                       toLayer:(nonnull CALayer *)layer
+                    withValues:(nonnull NSArray *)values
+                       keyPath:(nonnull NSString *)keyPath
+                    completion:(nonnull void(^)())completion;
 
 @end

@@ -84,8 +84,6 @@ static CGFloat lengthOfVector(CGVector vector) {
 }
 
 - (void)startWithContext:(NSObject<MDMTransitionContext> *)context {
-  // TODO(featherless): This router should be used to fall back to a system slide animation when
-  // there is no reverse motion.
   MDCMaskedTransitionMotionSpec spec = motionForContext(context);
   if (context.direction == MDMTransitionDirectionForward) {
     _shouldSlideWhenCollapsed = spec.shouldSlideWhenCollapsed;
@@ -138,7 +136,6 @@ static CGFloat lengthOfVector(CGVector vector) {
 
   UIView *floodFillView = [[UIView alloc] initWithFrame:context.foreViewController.view.bounds];
   floodFillView.backgroundColor = _sourceView.backgroundColor;
-  // TODO(featherless): Explore options for configuring the flood fill behavior.
 
   // TODO(featherless): Profile whether it's more performant to fade the flood fill out or to
   // fade the fore view in (what we're currently doing).
