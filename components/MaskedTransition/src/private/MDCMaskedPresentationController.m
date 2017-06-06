@@ -16,6 +16,14 @@
 
 #import "MDCMaskedPresentationController.h"
 
+#import <Transitioning/Transitioning.h>
+#import "MDMTransitionAnimator.h"
+
+#import "MDCMaskedTransitionMotionForContext.h"
+
+@interface MDCMaskedPresentationController () <MDMTransition>
+@end
+
 @implementation MDCMaskedPresentationController {
   CGRect (^_calculateFrameOfPresentedView)(UIPresentationController *);
 }
@@ -35,6 +43,16 @@
   return _calculateFrameOfPresentedView(self);
 }
 
+- (void)dismissalTransitionWillBegin {
+  if (!self.presentedViewController.mdm_transitionController.activeTransition) {
+    self.sourceView.hidden = false;
+
+    [self.presentedViewController.transitionCoordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+      self.scrimView.alpha = 0;
+    } completion:nil];
+  }
+}
+
 - (void)dismissalTransitionDidEnd:(BOOL)completed {
   if (completed) {
     [self.scrimView removeFromSuperview];
@@ -42,7 +60,24 @@
 
     self.sourceView.hidden = false;
     self.sourceView = nil;
+  } else {
+    self.scrimView.alpha = 1;
+    self.sourceView.hidden = true;
   }
+}
+
+- (void)startWithContext:(NSObject<MDMTransitionContext> *)context {
+  MDCMaskedTransitionMotionSpec spec = motionForContext(context);
+
+  MDMTransitionAnimator *animator = [[MDMTransitionAnimator alloc] init];
+  animator.shouldReverseValues = context.direction == MDMTransitionDirectionBackward;
+
+  MDCMaskedTransitionMotionTiming motion = (context.direction == MDMTransitionDirectionForward) ? spec.expansion : spec.collapse;
+
+  [animator addAnimationWithTiming:motion.scrimFade
+                           toLayer:self.scrimView.layer
+                        withValues:@[ @0, @1 ]
+                           keyPath:@"opacity"];
 }
 
 @end

@@ -19,10 +19,10 @@
 #import "MDMMotionTiming.h"
 
 /**
- A motion timing animator is responsible for adding Core Animation animations to a layer based on a
+ A transition animator is responsible for adding Core Animation animations to a layer based on a
  provided timing structure.
  */
-@interface MDMMotionTimingAnimator : NSObject
+@interface MDMTransitionAnimator : NSObject
 
 /**
  If enabled, all animations will be added with their values reversed.

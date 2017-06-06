@@ -17,9 +17,10 @@
 #import "MDCMaskedTransition.h"
 
 #import "MDMMotionTiming.h"
-#import "MDMMotionTimingAnimator.h"
+#import "MDMTransitionAnimator.h"
 
 #import "MDCMaskedPresentationController.h"
+#import "MDCMaskedTransitionMotionForContext.h"
 #import "MDCMaskedTransitionMotionSpec.h"
 
 // Math utilities
@@ -43,12 +44,13 @@ static CGFloat lengthOfVector(CGVector vector) {
   return (CGFloat)sqrt(vector.dx * vector.dx + vector.dy * vector.dy);
 }
 
-@interface MDCMaskedTransition () <MDMTransitionWithPresentation>
+@interface MDCMaskedTransition () <MDMTransitionWithPresentation, MDMTransitionWithFallback>
 @end
 
 @implementation MDCMaskedTransition {
   UIView *_sourceView;
   MDCMaskedPresentationController *_presentationController;
+  BOOL _shouldSlideWhenCollapsed;
 }
 
 - (instancetype)initWithSourceView:(UIView *)sourceView {
@@ -59,32 +61,8 @@ static CGFloat lengthOfVector(CGVector vector) {
   return self;
 }
 
-#pragma mark - Motion router
-
-+ (MDCMaskedTransitionMotionSpec)motionForContext:(NSObject<MDMTransitionContext> *)context {
-  const CGRect foreBounds = context.foreViewController.view.bounds;
-  const CGRect foreFrame = context.foreViewController.view.frame;
-  const CGRect containerBounds = context.containerView.bounds;
-
-  if (CGRectEqualToRect(context.foreViewController.view.frame, containerBounds)) {
-    return fullscreen;
-
-  } else if (foreBounds.size.width == containerBounds.size.width
-             && CGRectGetMaxY(foreFrame) == CGRectGetMaxY(containerBounds)) {
-    if (foreFrame.size.height > 100) {
-      return bottomSheet;
-
-    } else {
-      return toolbar;
-    }
-
-  } else if (foreBounds.size.width < containerBounds.size.width
-             && CGRectGetMidY(foreFrame) >= CGRectGetMidY(containerBounds)) {
-    return bottomCard;
-  }
-
-  // TODO: Support returning nil in some way.
-  return fullscreen;
+- (id<MDMTransition>)fallbackTransitionWithContext:(id<MDMTransitionContext>)context {
+  return _shouldSlideWhenCollapsed ? nil : self;
 }
 
 #pragma mark - MDMTransitionWithPresentation
@@ -109,9 +87,12 @@ static CGFloat lengthOfVector(CGVector vector) {
 - (void)startWithContext:(NSObject<MDMTransitionContext> *)context {
   // TODO(featherless): This router should be used to fall back to a system slide animation when
   // there is no reverse motion.
-  MDCMaskedTransitionMotionSpec spec = [[self class] motionForContext:context];
+  MDCMaskedTransitionMotionSpec spec = motionForContext(context);
+  if (context.direction == MDMTransitionDirectionForward) {
+    _shouldSlideWhenCollapsed = spec.shouldSlideWhenCollapsed;
+  }
 
-  MDMMotionTimingAnimator *animator = [[MDMMotionTimingAnimator alloc] init];
+  MDMTransitionAnimator *animator = [[MDMTransitionAnimator alloc] init];
   animator.shouldReverseValues = context.direction == MDMTransitionDirectionBackward;
 
   // # Caching original state
@@ -293,12 +274,7 @@ static CGFloat lengthOfVector(CGVector vector) {
                         withValues:@[ @(CGRectGetMidY(initialMaskedFrame)),
                                       @(CGRectGetMidY(finalMaskedFrame)) ]
                            keyPath:@"position.y"];
-
-  [animator addAnimationWithTiming:motion.scrimFade
-                           toLayer:scrimView.layer
-                        withValues:@[ @0, @1 ]
-                           keyPath:@"opacity"];
-
+ 
   [CATransaction commit];
 }
 

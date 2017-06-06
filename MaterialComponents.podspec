@@ -183,7 +183,7 @@ Pod::Spec.new do |s|
     ss.public_header_files = "components/#{ss.base_name}/src/*.h"
     ss.source_files = "components/#{ss.base_name}/src/*.{h,m}", "components/#{ss.base_name}/src/private/*.{h,m}"
 
-    ss.dependency "Transitioning"
+    ss.dependency "Transitioning", "~> 1.1"
   end
 
   s.subspec "NavigationBar" do |ss|
