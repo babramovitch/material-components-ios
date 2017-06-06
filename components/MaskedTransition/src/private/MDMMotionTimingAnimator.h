@@ -26,8 +26,17 @@
 
 /**
  If enabled, all animations will be added with their values reversed.
+
+ Disabled by default.
  */
 @property(nonatomic, assign) BOOL shouldReverseValues;
+
+/**
+ If enabled, all animations will start from their current presentation value.
+
+ Disabled by default.
+ */
+@property(nonatomic, assign) BOOL animateFromPresentationValue;
 
 /**
  Adds a single animation to the layer with the given timing structure.

@@ -20,7 +20,7 @@
 #import "MDMMotionTimingAnimator.h"
 
 #import "MDCMaskedPresentationController.h"
-#import "MDCMaskedTransitionMotion.h"
+#import "MDCMaskedTransitionMotionSpec.h"
 
 // Math utilities
 
@@ -61,46 +61,30 @@ static CGFloat lengthOfVector(CGVector vector) {
 
 #pragma mark - Motion router
 
-+ (MDCMaskedTransitionMotion)motionForContext:(NSObject<MDMTransitionContext> *)context {
++ (MDCMaskedTransitionMotionSpec)motionForContext:(NSObject<MDMTransitionContext> *)context {
   const CGRect foreBounds = context.foreViewController.view.bounds;
   const CGRect foreFrame = context.foreViewController.view.frame;
   const CGRect containerBounds = context.containerView.bounds;
 
   if (CGRectEqualToRect(context.foreViewController.view.frame, containerBounds)) {
-    if (context.direction == MDMTransitionDirectionForward) {
-      return fullscreenExpansion;
-    } else {
-      //return nil;
-    }
+    return fullscreen;
 
   } else if (foreBounds.size.width == containerBounds.size.width
              && CGRectGetMaxY(foreFrame) == CGRectGetMaxY(containerBounds)) {
     if (foreFrame.size.height > 100) {
-      if (context.direction == MDMTransitionDirectionForward) {
-        return bottomSheetExpansion;
-      } else {
-        //return nil
-      }
+      return bottomSheet;
 
     } else {
-      if (context.direction == MDMTransitionDirectionForward) {
-        return toolbarExpansion;
-      } else {
-        return toolbarCollapse;
-      }
+      return toolbar;
     }
 
   } else if (foreBounds.size.width < containerBounds.size.width
              && CGRectGetMidY(foreFrame) >= CGRectGetMidY(containerBounds)) {
-    if (context.direction == MDMTransitionDirectionForward) {
-      return bottomCardExpansion;
-    } else {
-      return bottomCardCollapse;
-    }
+    return bottomCard;
   }
 
   // TODO: Support returning nil in some way.
-  return fullscreenExpansion;
+  return fullscreen;
 }
 
 #pragma mark - MDMTransitionWithPresentation
@@ -125,7 +109,7 @@ static CGFloat lengthOfVector(CGVector vector) {
 - (void)startWithContext:(NSObject<MDMTransitionContext> *)context {
   // TODO(featherless): This router should be used to fall back to a system slide animation when
   // there is no reverse motion.
-  MDCMaskedTransitionMotion motion = [[self class] motionForContext:context];
+  MDCMaskedTransitionMotionSpec spec = [[self class] motionForContext:context];
 
   MDMMotionTimingAnimator *animator = [[MDMMotionTimingAnimator alloc] init];
   animator.shouldReverseValues = context.direction == MDMTransitionDirectionBackward;
@@ -191,7 +175,7 @@ static CGFloat lengthOfVector(CGVector vector) {
   CGRect initialMaskedFrame;
   CGPoint corner;
   const CGPoint initialSourceCenter = centerOfFrame(initialSourceFrame);
-  if (motion.isCentered) {
+  if (spec.isCentered) {
     initialMaskedFrame = frameCenteredAround(initialSourceCenter, originalFrame.size);
     // Bottom right
     corner = CGPointMake(CGRectGetMaxX(initialMaskedFrame), CGRectGetMaxY(initialMaskedFrame));
@@ -255,6 +239,8 @@ static CGFloat lengthOfVector(CGVector vector) {
 
     [context transitionDidEnd]; // Hand off back to UIKit
   }];
+
+  MDCMaskedTransitionMotionTiming motion = (context.direction == MDMTransitionDirectionForward) ? spec.expansion : spec.collapse;
 
   [animator addAnimationWithTiming:motion.contentFade
                            toLayer:context.foreViewController.view.layer
