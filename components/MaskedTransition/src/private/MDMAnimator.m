@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-#import "MDMTransitionAnimator.h"
+#import "MDMAnimator.h"
 
 #if TARGET_IPHONE_SIMULATOR
 UIKIT_EXTERN float UIAnimationDragCoefficient(void); // UIKit private drag coefficient.
@@ -53,7 +53,7 @@ static NSArray* coerceUIKitValuesToCoreAnimationValues(NSArray *values) {
   return values;
 }
 
-@implementation MDMTransitionAnimator
+@implementation MDMAnimator
 
 - (void)addAnimationWithTiming:(MDMMotionTiming)timing
                        toLayer:(CALayer *)layer

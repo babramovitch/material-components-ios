@@ -184,6 +184,7 @@ Pod::Spec.new do |s|
     ss.source_files = "components/#{ss.base_name}/src/*.{h,m}", "components/#{ss.base_name}/src/private/*.{h,m}"
 
     ss.dependency "Transitioning", "~> 1.1"
+    ss.dependency "MotionInterchange", "~> 1.0"
   end
 
   s.subspec "NavigationBar" do |ss|

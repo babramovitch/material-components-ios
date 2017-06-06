@@ -16,8 +16,7 @@
 
 #import "MDCMaskedTransition.h"
 
-#import "MDMMotionTiming.h"
-#import "MDMTransitionAnimator.h"
+#import "MDMAnimator.h"
 
 #import "MDCMaskedPresentationController.h"
 #import "MDCMaskedTransitionMotionForContext.h"
@@ -92,7 +91,7 @@ static CGFloat lengthOfVector(CGVector vector) {
     _shouldSlideWhenCollapsed = spec.shouldSlideWhenCollapsed;
   }
 
-  MDMTransitionAnimator *animator = [[MDMTransitionAnimator alloc] init];
+  MDMAnimator *animator = [[MDMAnimator alloc] init];
   animator.shouldReverseValues = context.direction == MDMTransitionDirectionBackward;
 
   // # Caching original state

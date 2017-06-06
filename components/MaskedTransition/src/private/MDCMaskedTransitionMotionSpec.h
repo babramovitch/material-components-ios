@@ -15,7 +15,7 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "MDMMotionTiming.h"
+#import <MotionInterchange/MotionInterchange.h>
 
 struct MDCMaskedTransitionMotionTiming {
   MDMMotionTiming contentFade;

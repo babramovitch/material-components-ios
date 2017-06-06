@@ -22,7 +22,7 @@
  A transition animator is responsible for adding Core Animation animations to a layer based on a
  provided timing structure.
  */
-@interface MDMTransitionAnimator : NSObject
+@interface MDMAnimator : NSObject
 
 /**
  If enabled, all animations will be added with their values reversed.
