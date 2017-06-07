@@ -52,7 +52,7 @@ static const CGFloat kCornerRadius = 0;
 /**
  Padding between the edges of the snackbar and any content.
  */
-static UIEdgeInsets kContentMargin = (UIEdgeInsets){18.0, 24.0, 18.0, 24.0};
+static UIEdgeInsets kContentMargin = (UIEdgeInsets){18.0, 24.0, 18.0, 0.0};
 
 /**
  Padding between the image and the main title.
@@ -384,7 +384,7 @@ static const CGFloat kButtonInkRadius = 64.0f;
       button.titleLabel.numberOfLines = 1;
       button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
       button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-      button.contentEdgeInsets = UIEdgeInsetsMake(0, kButtonPadding, 0, kButtonPadding);
+      button.contentEdgeInsets = UIEdgeInsetsMake(0, kButtonPadding, 0, kButtonPadding+19);
 
       // Set up the button's accessibility values.
       button.accessibilityIdentifier = message.action.accessibilityIdentifier;
